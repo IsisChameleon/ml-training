@@ -1,0 +1,22 @@
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM continuumio/miniconda3
+
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE 1
+
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED 1
+
+# Install pip requirements
+ADD conda-ml-training.yml .
+RUN conda env create -f environment.yml
+
+WORKDIR /training
+ADD . /training
+
+# Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
+RUN useradd appuser && chown -R appuser /app
+USER appuser
+
+# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+CMD ["python", "./train/train.py"]
