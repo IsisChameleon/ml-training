@@ -1,0 +1,96 @@
+ARG CUDA="10.0"
+ARG CUDNN="7"
+
+FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu16.04
+
+LABEL com.nvidia.volumes.needed="nvidia_driver"
+
+RUN echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+RUN apt-get update -y \ 
+    && apt-get install -y --allow-downgrades --no-install-recommends --allow-change-held-packages \
+        build-essential \
+        cmake \
+        tree \
+        git \
+        curl \
+        vim \
+        ca-certificates \
+        libnccl2=2.0.5-3+cuda9.0 \
+        libnccl-dev=2.0.5-3+cuda9.0 \
+        python-qt4 \
+        libjpeg-dev \
+	    zip \
+	    unzip \
+        libpng-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+
+
+# Create a non-root user and switch to it.
+RUN mkdir /src
+RUN adduser --disabled-password --gecos '' --shell /bin/bash ml-user \
+    && chown -R ml-user:ml-user /src
+#RUN sudo usermod -aG sudo ml-user
+USER ml-user
+ENV USER ml-user
+
+# All users can use /home/user as their home directory.
+ENV HOME=/home/ml-user
+RUN chmod 777 /home/ml-user
+
+WORKDIR ${HOME}
+ENV PATH="${HOME}/miniconda/bin:${PATH}"
+ARG PATH="${HOME}/miniconda/bin:${PATH}"
+# Install Miniconda.
+# https://docs.anaconda.com/anaconda/install/silent-mode/
+RUN echo ${HOME}
+RUN pwd
+RUN tree ${HOME}
+RUN curl -so ${HOME}/miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  
+RUN tree ${HOME}
+RUN chmod 777 ${HOME}/miniconda.sh 
+RUN ${HOME}/miniconda.sh
+RUN tree ${HOME}
+RUN rm ${HOME}/miniconda.sh 
+#RUN find / -name "conda" 2>/dev/null
+#RUN ls /home/ml-user
+ENV CONDA_AUTO_UPDATE_CONDA=false
+RUN PATH="${HOME}/bin":$PATH >> .bashrc 
+RUN exec bash
+RUN conda --version
+
+#   /opt/conda/bin/conda install conda-build
+
+# Create a Python 3.6 environment.
+RUN $HOME/miniconda/bin/conda install conda-build
+RUN $HOME/miniconda/bin/conda create -y --name ml-training python=3.6.8 
+RUN $HOME/miniconda/bin/conda clean -ya
+
+WORKDIR /src
+
+ENV CONDA_DEFAULT_ENV=ml-training
+ENV CONDA_PREFIX=~/miniconda/envs/$CONDA_DEFAULT_ENV
+ENV CONDA_BASE=~/miniconda
+ENV PATH $CONDA_PREFIX/bin:$PATH
+ENV PATH $CONDA_BASE/bin:$PATH
+ENV CONDA_AUTO_UPDATE_CONDA=false
+
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+# Create a working directory.
+
+WORKDIR /src
+RUN git clone https://github.com/IsisChameleon/ml-training.git .
+
+WORKDIR /src/ml-training
+RUN conda env create -f conda-ml-training.yml \
+    && /home/user/miniconda/bin/conda clean -ya
+
+RUN source activate ml-training
+RUN source ~/.bashrc
+
+WORKDIR /nbs
+
+#CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
