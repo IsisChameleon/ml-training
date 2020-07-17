@@ -13,6 +13,17 @@
 			}
 		},
 		{
+			"type": "docker-build",
+			"label": "docker-build-sshd",
+			"platform": "python",
+			"dockerBuild": {
+				"tag": "mltraining-sshd:latest",
+				"dockerfile": "${workspaceFolder}/data/Dockerfile",
+				"context": "${workspaceFolder}/data",
+				"pull": true
+			}
+		},
+		{
 			"type": "docker-run",
 			"label": "docker-run: debug",
 			"dependsOn": [
@@ -21,6 +32,13 @@
 			"python": {
 				"file": "./train/train.py"
 			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run-sshd: debug",
+			"dependsOn": [
+				"docker-build-sshd"
+			],
 		}
 	]
 }

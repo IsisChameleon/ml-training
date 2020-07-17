@@ -10,14 +10,14 @@ https://docs.paperspace.com/gradient/notebooks/notebook-containers/building-a-cu
 
 
 ``  gradient jobs create \
-        --apiKey a89b1d82aa901f10194447412e9b83 \
-        --projectId prr6d2y9i \
+        --apiKey <api key> \
+        --projectId <project id> \
         --machineType 'GPU+' \
         --workspace 'https://github.com/IsisChameleon/ml-training.git' \
         --useDockerfile true \
         --buildOnly   \
         --registryTarget isischameleon/ml-training:0.1 \
-        --registryTargetUsername isischameleon \
-        --registryTargetPassword '@8!C)iN[6ji*jsS' ```
+        --registryTargetUsername username \
+        --registryTargetPassword 'psw' ```
 
 https://hub.docker.com/repository/docker/isischameleon/ml-training
