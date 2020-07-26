@@ -1,5 +1,6 @@
 {
     "configurations": [
+ 
         {
             "name": "Docker: Python - General",
             "type": "docker",
@@ -14,6 +15,17 @@
                 ],
                 "projectType": "general"
             }
+        },
+        {
+            "name": "Python - Current File",
+            "type": "python",
+            "request": "launch",
+            "program":"${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args" : [ 
+                "--domino_location", "./storage/pix2pix/data/maps"
+            ]
         }
     ]
 }

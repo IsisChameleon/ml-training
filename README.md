@@ -21,3 +21,6 @@ https://docs.paperspace.com/gradient/notebooks/notebook-containers/building-a-cu
         --registryTargetPassword 'psw' ```
 
 https://hub.docker.com/repository/docker/isischameleon/ml-training
+
+ImageImageList : 
+https://docs.fast.ai/tutorial.itemlist.html

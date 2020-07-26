@@ -61,7 +61,7 @@ def _train(args):
     path_lr = dataset_storage_path/'small-64/train'
     path_mr = dataset_storage_path/'small-256/train'
 
-    logger.info("Original resolution training dataset: {}".format(path_hr))
+    logger.info("Original resolution dataset for target images: {}".format(path_hr))
     logger.info("Medium resolution training dataset: {}".format(path_mr))
     logger.info("Low resolution training dataset: {}".format(path_lr))
 
