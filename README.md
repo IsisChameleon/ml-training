@@ -24,3 +24,8 @@ https://hub.docker.com/repository/docker/isischameleon/ml-training
 
 ImageImageList : 
 https://docs.fast.ai/tutorial.itemlist.html
+
+
+PyTorch model:
+
+https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix

@@ -191,7 +191,7 @@ print(myPath)
 # %%
 def get_data(iil:ImageImageList, bs:int,size:int):
     ''' Takes an ImageImageList in iil and return a databunch with images of size=size and training batch size= bs '''
-    data = (iil.label_from_func(lambda x: pathYs/x.name)
+    data = (iil.label_from_func(getYsfromXs)
            .transform(get_transforms(max_zoom=2.), size=size, tfm_y=True)
            .databunch(bs=bs).normalize(imagenet_stats, do_y=True))
 
@@ -209,6 +209,49 @@ data = get_data(iil=iil, bs=16,size=100)
 
 
 # %%
+from PIL import Image
+
+def _plot(i,j,ax): 
+    images = [ data.train_ds[0][0], data.train_ds[0][1] ]
+    widths, heights = zip(*(i.size for i in images))
+
+    total_width = sum(widths)
+    max_height = max(heights)
+    new_im = Image.new('RGB', (total_width, max_height))
+
+    x_offset = 0
+    for im in images:
+        new_im.paste(im, (x_offset,0))
+        x_offset += im.size[0]
+
+    new_im.show(ax)
+
+plot_multi(_plot, 3, 3, figsize=(8,8))
 
 
 
+
+
+# %%
+import sys
+sys.path.append(r'/home/isischameleon/Dropbox/Coding/gitrepos/ml-training')
+import functools
+
+from model.networks import NLayerDiscriminator
+
+model = NLayerDiscriminator().model
+
+# %%
+
+learn = Learner(data, model, loss_func = nn.CrossEntropyLoss(), metrics=accuracy)
+
+
+
+
+# %%
+
+learn.summary()
+
+
+
+# %%
