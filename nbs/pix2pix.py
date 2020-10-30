@@ -249,8 +249,15 @@ learn = Learner(data, model, loss_func = nn.CrossEntropyLoss(), metrics=accuracy
 
 
 # %%
+from model.networks import UnetGenerator
 
-learn.summary()
+generator_model = UnetGenerator(input_nc=3, output_nc=3, num_downs=7).model
+
+gen_loss = MSELossFlat()
+
+
+gen_learner=unet_learner(data, generator_model, wd=1e-3, blur=True, norm_type=NormType.Weight,
+                         self_attention=True, y_range=y_range, loss_func=lgen_loss)
 
 
 
